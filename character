@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <ctype.h>
+
+#define MAX_FILENAME_LENGTH 100
+#define MAX_WORD_LENGTH 100
+
+int main() {
+    char filename[MAX_FILENAME_LENGTH];
+    printf("Enter the filename: ");
+    scanf("%s", filename);
+
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    int charCount = 0, lineCount = 0, wordCount = 0;
+    char word[MAX_WORD_LENGTH];
+    int inWord = 0;
+
+    char ch, prev = ' ';
+    while ((ch = fgetc(file)) != EOF) {
+        charCount++;
+
+        // Increment line count if newline encountered
+        if (ch == '\n') {
+            lineCount++;
+        }
+
+        // Skip whitespace
+        if (isspace(ch)) {
+            inWord = 0;
+            continue;
+        }
+
+        // Ignore single-line comments
+        if (prev == '/' && ch == '/') {
+            while ((ch = fgetc(file)) != '\n' && ch != EOF) {
+                charCount++;
+            }
+            lineCount++;
+            continue;
+        }
+
+        // Ignore multi-line comments
+        if (prev == '/' && ch == '*') {
+            while ((ch = fgetc(file)) != EOF) {
+                charCount++;
+                if (prev == '*' && ch == '/') {
+                    break;
+                }
+                if (ch == '\n') {
+                    lineCount++;
+                }
+                prev = ch;
+            }
+            continue;
+        }
+
+        // Increment word count if transitioning from non-word to word
+        if (!inWord) {
+            inWord = 1;
+            wordCount++;
+        }
+
+        // Check word length limit
+        if (strlen(word) >= MAX_WORD_LENGTH - 1) {
+            printf("Word exceeds maximum length. Truncating.\n");
+            word[MAX_WORD_LENGTH - 1] = '\0';
+        }
+
+        // Add character to word
+        word[strlen(word)] = ch;
+        word[strlen(word) + 1] = '\0';
+
+        prev = ch;
+    }
+
+    fclose(file);
+
+    printf("Number of characters: %d\n", charCount);
+    printf("Number of lines: %d\n", lineCount);
+    printf("Number of words: %d\n", wordCount);
+
+    return 0;
+}
