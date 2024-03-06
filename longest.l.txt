@@ -1,0 +1,33 @@
+%{
+#include <stdio.h>
+#include <string.h>
+%}
+
+%option noyywrap
+
+%{
+    char longest_word[100]; // Assuming maximum word length is 100
+    int max_length = 0;
+%}
+
+%%
+
+[a-zA-Z]+ {
+    if (yyleng > max_length) {
+        max_length = yyleng;
+        strncpy(longest_word, yytext, yyleng);
+        longest_word[yyleng] = '\0';
+    }
+}
+
+.|\n {
+    // Ignore all other characters
+}
+
+%%
+
+int main() {
+    yylex();
+    printf("Longest word: %s\n", longest_word);
+    return 0;
+}

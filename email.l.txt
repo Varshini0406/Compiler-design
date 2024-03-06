@@ -1,0 +1,21 @@
+%{
+#include <stdio.h>
+%}
+
+DIGIT       [0-9]
+LETTER      [a-zA-Z]
+ALNUM       ([a-zA-Z0-9])
+DOT         (\.)
+AT          (@)
+ALPHA       ([a-zA-Z])
+DOMAIN      ([a-zA-Z]+([\.][a-zA-Z]+)+)
+
+%%
+{ALPHA}{ALNUM}*{AT}{ALPHA}{DOMAIN}    printf("Valid email address: %s\n", yytext);
+.|\n                                   
+%%
+
+int main() {
+    yylex();
+    return 0;
+}

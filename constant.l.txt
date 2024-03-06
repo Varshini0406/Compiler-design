@@ -1,0 +1,32 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+%}
+
+DIGIT       [0-9]
+NUMBER      ({DIGIT}+)
+FLOAT       ({NUMBER}("."{NUMBER})?)
+CONSTANT    (({NUMBER})|({FLOAT}))
+%%
+{CONSTANT}   { printf("Constant: %s\n", yytext); }
+.|\n         ; // Ignore other characters
+%%
+
+int main() {
+    if (argc != 2) {
+        printf("Usage: %s <input_file>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *f = fopen(argv[1], "r");
+    if (!f) {
+        perror("fopen");
+        return 1;
+    }
+
+    yyin = f;
+    yylex();
+    fclose(f);
+
+    return 0;
+}
