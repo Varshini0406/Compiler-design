@@ -1,0 +1,9 @@
+%%
+^[aeiouAEIOU][a-zA-Z0-9_]*  printf("Valid string: %s\n", yytext);
+.|\n
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
